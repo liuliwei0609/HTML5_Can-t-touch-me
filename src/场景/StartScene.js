@@ -25,6 +25,7 @@ var StartLayer = cc.Layer.extend({
             {
                 audioEngine.playEffect(res.Button1_wav);
             }
+            cc.director.runScene(new SuccessScene());
         },this);
         // var play2Item=new cc.MenuItemImage(res.Play2_png,function(){},this);
         // var toggleItem=new cc.MenuItemToggle(play1Item,play2Item,function(){},this);
@@ -145,7 +146,13 @@ var PopLayer = cc.Layer.extend({
         else if(0==ls.getItem("bgmisOn"))
         {
             bgmtoggleItem.setSelectedIndex(0); //将图标变为序列1的图标
-            audioEngine.playMusic(res.Bgm_mp3,true);
+            if(audioEngine.isMusicPlaying())
+            {
+                //continue
+            }
+            else {
+                audioEngine.playMusic(res.Bgm_mp3, true);
+            }
         }
         else if(1==ls.getItem("bgmisOn"))
         {
