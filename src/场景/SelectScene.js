@@ -1,3 +1,6 @@
+//未实现第二个界面
+//未实现点击图片进入选关
+
 var SelectLayer = cc.Layer.extend({
     sprite:null,
     Block:[],
@@ -5,6 +8,8 @@ var SelectLayer = cc.Layer.extend({
     Star_img:[],
     failedStar_img:[],
     Lock_img:[],
+    NumItem:[],
+    NumMenu:[],
     //过关数
     //每关的评分
     //总分
@@ -21,9 +26,9 @@ var SelectLayer = cc.Layer.extend({
 
         var ls=cc.sys.localStorage;
         //设定目前的通关数
-        ls.setItem("PassedLevels",4);
+        ls.setItem("PassedLevels",null);
         //设定每关的评分数
-        ls.setItem("PerLevelsStarNum",[3221]);
+        ls.setItem("PerLevelsStarNum",2312);
         // cc.log(ls.getItem("PerLevelsStarNum"));
 
         //计算总评分数
@@ -51,6 +56,70 @@ var SelectLayer = cc.Layer.extend({
 
         //建立已通关关卡
         //根据关卡数 建立通关的关卡 第一关默认为通关
+
+
+        if("null"==ls.getItem("PassedLevels"))
+        {
+
+            var i=0;
+            this.Block[i]=new cc.Sprite(res.Block_png);
+            this.Block[i].x=size.width*0.247*(i+1);
+            this.Block[i].y=size.height*0.7;
+            this.addChild(this.Block[i]);
+            var j=i+1;
+
+            this.NumItem[i]=new cc.MenuItemImage("res/SelectScene/Num_"+j+".png","res/SelectScene/Num_"+j+".png",function(){
+                cc.director.runScene(new MainScene());
+            },this);
+            this.NumMenu[i]=new cc.Menu(this.NumItem[i]);
+            this.NumMenu[i].x=size.width*0.247*(i+1);
+            this.NumMenu[i].y=size.height*0.7;
+
+            this.addChild(this.NumMenu[i]);
+
+
+
+            for(var i=1;i<6;i++)
+            {
+                //建立边框
+                this.Block[i]=new cc.Sprite(res.Block_png);
+                if(i<3)
+                {
+                    this.Block[i].x=size.width*0.247*(i+1);
+                    this.Block[i].y=size.height*0.7;
+                }
+                else
+                {
+                    this.Block[i].x=size.width*0.247*(i-2);
+                    this.Block[i].y=size.height*0.32;
+                }
+                this.addChild(this.Block[i]);
+                //建立锁子图片
+                var j=i+1;
+                this.Lock_img[i]=new cc.Sprite(res.Lock_png);
+                // this.Lock_img[i].setScale(0.6);
+                if(i<3)
+                {
+                    this.Lock_img[i].x=size.width*0.247*(i+1);
+                    this.Lock_img[i].y=size.height*0.7;
+                }
+                else
+                {
+                    this.Lock_img[i].x=size.width*0.247*(i-2);
+                    this.Lock_img[i].y=size.height*0.32;
+                }
+                this.addChild(this.Lock_img[i]);
+
+
+            }
+
+        }
+
+
+
+
+
+
         for(var i=0;i<ls.getItem("PassedLevels");i++)
         {
             //建立边框
@@ -68,19 +137,22 @@ var SelectLayer = cc.Layer.extend({
             this.addChild(this.Block[i]);
             //建立数字图片
             var j=i+1;
-            this.Num_img[i]=new cc.Sprite("res/SelectScene/Num_"+j+".png");
-            this.Num_img[i].setScale(0.6);
+
+            this.NumItem[i]=new cc.MenuItemImage("res/SelectScene/Num_"+j+".png","res/SelectScene/Num_"+j+".png",function(){
+                cc.director.runScene(new MainScene());
+            },this);
+            this.NumMenu[i]=new cc.Menu(this.NumItem[i]);
             if(i<3)
             {
-                this.Num_img[i].x=size.width*0.247*(i+1);
-                this.Num_img[i].y=size.height*0.7;
+                this.NumMenu[i].x=size.width*0.247*(i+1);
+                this.NumMenu[i].y=size.height*0.7;
             }
             else
             {
-                this.Num_img[i].x=size.width*0.247*(i-2);
-                this.Num_img[i].y=size.height*0.32;
+                this.NumMenu[i].x=size.width*0.247*(i-2);
+                this.NumMenu[i].y=size.height*0.32;
             }
-            this.addChild(this.Num_img[i]);
+            this.addChild(this.NumMenu[i]);
             //获取评分
             var grade=parseInt(ls.getItem("PerLevelsStarNum")[i]);
             //已获得的星星
@@ -110,6 +182,8 @@ var SelectLayer = cc.Layer.extend({
                 tempGrade++;
                 this.addChild(this.failedStar_img[x]);
             }
+            cc.log(i);
+
 
         }
 
@@ -119,19 +193,22 @@ var SelectLayer = cc.Layer.extend({
         for(var i=ls.getItem("PassedLevels");i<6;i++)
         {
             //建立边框
+            i=parseInt(i);
             this.Block[i]=new cc.Sprite(res.Block_png);
             if(i<3)
             {
                 this.Block[i].x=size.width*0.247*(i+1);
                 this.Block[i].y=size.height*0.7;
+                cc.log(i);
             }
             else
             {
                 this.Block[i].x=size.width*0.247*(i-2);
                 this.Block[i].y=size.height*0.32;
+                cc.log(i);
             }
             this.addChild(this.Block[i]);
-            //建立锁子图片
+            // 建立锁子图片
             var j=i+1;
             this.Lock_img[i]=new cc.Sprite(res.Lock_png);
             // this.Lock_img[i].setScale(0.6);
@@ -147,9 +224,35 @@ var SelectLayer = cc.Layer.extend({
             }
             this.addChild(this.Lock_img[i]);
 
-
         }
 
+        //增加返回主界面和选关按钮
+        var backItem=new cc.MenuItemImage(res.SelectBack_png,res.SelectBack_png,function(){
+            if(0==cc.sys.localStorage.getItem("soundisOn"))
+            {
+                audioEngine.playEffect(res.Button1_wav);
+            }
+            cc.director.runScene(new StartScene());
+        },this);
+        backItem.setScale(0.6);
+        var backMenu=new cc.Menu(backItem);
+        backMenu.x=size.width*0.24;
+        backMenu.y=size.height*0.06;
+
+        var nextItem=new cc.MenuItemImage(res.SelectNext_png,res.SelectNext_png,function(){
+            if(0==cc.sys.localStorage.getItem("soundisOn"))
+            {
+                audioEngine.playEffect(res.Button1_wav);
+            }
+            cc.director.runScene(new MainScene());
+        },this);
+        nextItem.setScale(0.6);
+        var nextMenu=new cc.Menu(nextItem);
+        nextMenu.x=size.width*0.74;
+        nextMenu.y=size.height*0.06;
+
+        this.addChild(backMenu);
+        this.addChild(nextMenu);
 
 
 

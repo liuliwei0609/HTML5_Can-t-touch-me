@@ -37,12 +37,15 @@ var Player = cc.Sprite.extend({
         this.leftRunAction = run_left;
 
         //跳动封装
-        var jump=cc.sequence(cc.jumpBy(1,cc.p(0,0),this.jumpY,1),cc.callFunc(function(){
+        var jump_right=cc.sequence(cc.jumpBy(1,cc.p(100,0),this.jumpY,1),cc.callFunc(function(){
+            isJumping=false;
+        }));
+        var jump_left=cc.sequence(cc.jumpBy(1,cc.p(-100,0),this.jumpY,1),cc.callFunc(function(){
             isJumping=false;
         }));
 
-        var isLefting=false;
-        var isRighting=false;
+        // var isLefting=false;
+        // var isRighting=false;
 
         var isJumping=false;//防止一直跳跃的状态
         // var isLeft=false;//判断跳跃
@@ -50,39 +53,46 @@ var Player = cc.Sprite.extend({
         var that=this.player;
         var speed=this.speed;
         var listener=cc.EventListener.create({
-            event:cc.EventListener.KEYBOARD,
-            onKeyPressed:function(Code,event)
+            event:cc.EventListener.TOUCH_ONE_BY_ONE,
+            swallowTouches:true,
+            onTouchBegan:function(touch,event)
             {
-                cc.log("cureentKey = "+ Code);
-                if(cc.KEY.up==Code&&cc.KEY.right)
+               var location=touch.getLocation();
+                if(location.x>cc.winSize.width/2)
                 {
-                    //jump
-
-                    if (isJumping ==false)
-                    {
-                        isJumping = true;
-                        that.runAction(jump);
-                    }
-
-
-                }
-                if(cc.KEY.right==Code)
-                {
-                    //right
-                    isRighting=true;
-                    that.x+=6;
                     that.runAction(run_right);
+                    that.x+=15;
                 }
-                if(cc.KEY.left==Code)
+                if(location.x<=cc.winSize.width/2)
                 {
-                    //right
-                    isLefting=true;
-                    that.x-=6;
                     that.runAction(run_left);
+                    that.x-=15;
+                }
+                return true;
+
+            },
+            onTouchMoved:function(touch,event)
+            {
+                var location=touch.getLocation();
+                if(location.x>cc.winSize.width/2)
+                {
+                    if(isJumping==false)
+                    {
+                        that.runAction(jump_right);
+                        isJumping=true;
+                    }
+                }
+                if(location.x<=cc.winSize.width/2)
+                {
+                    if(isJumping==false)
+                    {
+                        that.runAction(jump_left);
+                        isJumping=true;
+                    }
                 }
 
             },
-            onKeyReleased:function(Code,event)
+            onTouchEnded:function(touch,event)
             {
 
             }
@@ -95,24 +105,46 @@ var Player = cc.Sprite.extend({
         this._super();
         cc.log("onExit调用，移除监听器");
         cc.eventManager.removeListener(this.listener);
-    },
-    callback:function()
-    {
-        var prop=cc.sys.localStorage.getItem("canUseProp");
-        if(prop)
-        {
-            if(prop.c)
-            {
-                console.log(1);
-            }
-            if(prop.x)
-            {
-                console.log(2);
-            }
-            if(prop.t)
-            {
-                console.log(3);
-            }
-        }
     }
 });
+
+//
+// var listener=cc.EventListener.create({
+//     event:cc.EventListener.KEYBOARD,
+//     onKeyPressed:function(Code,event)
+//     {
+//         cc.log("cureentKey = "+ Code);
+//         if(cc.KEY.up==Code&&cc.KEY.right)
+//         {
+//             //jump
+//
+//             if (isJumping ==false)
+//             {
+//                 isJumping = true;
+//                 that.runAction(jump);
+//             }
+//
+//
+//         }
+//         if(cc.KEY.right==Code)
+//         {
+//             //right
+//             isRighting=true;
+//             that.x+=6;
+//             that.runAction(run_right);
+//         }
+//         if(cc.KEY.left==Code)
+//         {
+//             //right
+//             isLefting=true;
+//             that.x-=6;
+//             that.runAction(run_left);
+//         }
+//
+//     },
+//     onKeyReleased:function(Code,event)
+//     {
+//
+//     }
+//
+// });

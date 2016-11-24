@@ -25,7 +25,7 @@ var StartLayer = cc.Layer.extend({
             {
                 audioEngine.playEffect(res.Button1_wav);
             }
-            cc.director.runScene(new SuccessScene());
+            cc.director.runScene(new SelectScene());
         },this);
         // var play2Item=new cc.MenuItemImage(res.Play2_png,function(){},this);
         // var toggleItem=new cc.MenuItemToggle(play1Item,play2Item,function(){},this);
