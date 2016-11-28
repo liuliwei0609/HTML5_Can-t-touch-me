@@ -12,10 +12,11 @@ var StartLayer = cc.Layer.extend({
         bg.y=size.height/2;
         this.addChild(bg);
 
-        var logo=new cc.LabelTTF("别碰我");
+        /*var logo=new cc.LabelTTF("别碰我");
         logo.setFontSize(size.width/8);
         logo.setFontFillColor(cc.color.BLACK);
-        logo.enableStroke(cc.color.YELLOW,8);
+        logo.enableStroke(cc.color.YELLOW,8);*/
+        var logo = new cc.MenuItemImage(res.button_png);
         logo.x=size.width/2;
         logo.y=size.height*0.8;
         this.addChild(logo);
@@ -34,13 +35,13 @@ var StartLayer = cc.Layer.extend({
         playMenu.y=size.height/2;
         this.addChild(playMenu);
 
-        var settingLabel=new cc.LabelTTF("设置");
-        settingLabel.setFontSize(size.width/16);
+        var settingIcon=new cc.MenuItemImage(res.button_png);
 
-        var aboutLabel=new cc.LabelTTF("关于");
-        aboutLabel.setFontSize(size.width/16);
 
-        var settingItem=new cc.MenuItemLabel(settingLabel,function(){
+        var aboutIcon=new cc.MenuItemImage(res.button_png);
+
+
+        var settingItem=new cc.MenuItemLabel(settingIcon,function(){
             // this.getParent().PopLayer.setVisible(true);
             //按钮音效
             this.getParent().addChild(this.getParent().PopLayer,1);
@@ -53,7 +54,7 @@ var StartLayer = cc.Layer.extend({
         settingMenu.x=size.width*0.3;
         settingMenu.y=size.height*0.2;
 
-        var aboutItem=new cc.MenuItemLabel(aboutLabel,function(){
+        var aboutItem=new cc.MenuItemLabel(aboutIcon,function(){
             this.getParent().addChild(this.getParent().AboutLayer,1);
             if(0==cc.sys.localStorage.getItem("soundisOn"))
             {
@@ -101,21 +102,17 @@ var PopLayer = cc.Layer.extend({
         pop.y=size.height/2;
         this.addChild(pop);
         //添加“背景音乐”Label
-        var text1=new cc.LabelTTF("背景音乐");
-        text1.setFontSize(size.width/38);
-        text1.setFontFillColor(cc.color.BLACK);
-        text1.x=size.width*0.46;
-        text1.y=size.height*0.6;
-        this.addChild(text1);
+        var backMusic = new cc.MenuItemImage(res.button_png);
+        backMusic.x=size.width*0.46;
+        backMusic.y=size.height*0.6;
+        this.addChild(backMusic);
 
 
         //添加“背景音效”Label
-        var text2=new cc.LabelTTF("背景音效");
-        text2.setFontSize(size.width/38);
-        text2.setFontFillColor(cc.color.BLACK);
-        text2.x=size.width*0.46;
-        text2.y=size.height*0.47;
-        this.addChild(text2);
+        var backEffect =new cc.MenuItemImage(res.button_png);
+        backEffect.x=size.width*0.46;
+        backEffect.y=size.height*0.47;
+        this.addChild(backEffect);
 
         //添加背景音乐按钮
         var bgmonItem=new cc.MenuItemImage(res.MusicOnNormal,res.MusicOnSelected,function(){
@@ -204,9 +201,10 @@ var PopLayer = cc.Layer.extend({
         soundMenu.y=size.height*0.47;
         this.addChild(soundMenu);
 
-        var closeItem=new cc.MenuItemFont("关闭",function(){
+        var closeItem = new cc.MenuItemImage(res.button_png,res.button_png,function () {
             this.removeFromParent();
         },this);
+
         var CloseMenu=new cc.Menu(closeItem);
         CloseMenu.x=size.width/2;
         CloseMenu.y=size.height*0.4;
@@ -260,9 +258,10 @@ var AboutLayer = cc.Layer.extend({
         this.addChild(text2);
 
         //关闭按钮
-        var closeItem=new cc.MenuItemFont("关闭",function(){
+        var closeItem = new cc.MenuItemImage(res.button_png,res.button_png,function () {
             this.removeFromParent();
-        },this);
+        },this)
+
         var CloseMenu=new cc.Menu(closeItem);
         CloseMenu.x=size.width/2;
         CloseMenu.y=size.height*0.4;

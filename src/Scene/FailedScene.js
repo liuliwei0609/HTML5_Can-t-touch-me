@@ -13,12 +13,9 @@ var FailedLayer = cc.Layer.extend({
         bg.y=size.height/2;
         this.addChild(bg);
         //失败label创建
-        var failedLabel = new cc.LabelTTF("失败","",50);
+        var failedLabel = new cc.MenuItemImage(res.button_png,res.button_png,50);
         failedLabel.x = size.width*0.5;
         failedLabel.y = size.height*0.8;
-        failedLabel.setFontFillColor(cc.color.RED);
-        failedLabel.enableStroke(cc.color.YELLOW,5);
-        failedLabel.enableShadow(cc.color.GREEN,cc.p(5,5),5);
         this.addChild(failedLabel);
 
         //星级评定

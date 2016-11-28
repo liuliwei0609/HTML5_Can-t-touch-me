@@ -1,0 +1,27 @@
+{
+    "project_type": "javascript",
+
+    "debugMode" : 4,
+    "showFPS" : true,
+    "frameRate" : 60,
+    "noCache" : false,
+    "id" : "gameCanvas",
+    "renderMode" : 0,
+    "engineDir":"frameworks/cocos2d-html5",
+
+    "modules" : ["cocos2d"],
+
+    "jsList" : [
+        "src/resource.js",
+        "src/EnemyClass/EnemyClass.js",
+        "src/PeopleClass/PeopleClass.js",
+        "src/PropClass/PropClass.js",
+        "src/Scene/FailedScene.js",
+        "src/Scene/MainScene.js",
+        "src/Scene/SelectScene.js",
+        "src/Scene/StartScene.js",
+        "src/Scene/SuccessScene.js",
+        "src/SceneClass/SceneClass.js",
+        "src/TrapClass/TrapClass.js"
+    ]
+}

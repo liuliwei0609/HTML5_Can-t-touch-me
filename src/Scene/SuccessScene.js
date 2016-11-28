@@ -15,12 +15,9 @@ var SuccessLayer = cc.Layer.extend({
         bg.y=size.height/2;
         this.addChild(bg);
         //通关label创建
-        var SuccessLabel = new cc.LabelTTF("过 关！","",50);
+        var SuccessLabel = new cc.MenuItemImage(res.button_png,res.button_png,50);
         SuccessLabel.x = size.width*0.5;
         SuccessLabel.y = size.height*0.8;
-        SuccessLabel.setFontFillColor(cc.color.RED);
-        SuccessLabel.enableStroke(cc.color.YELLOW,5);
-        SuccessLabel.enableShadow(cc.color.GREEN,cc.p(5,5),5);
         this.addChild(SuccessLabel);
 
         //星级评定

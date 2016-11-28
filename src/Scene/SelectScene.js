@@ -68,7 +68,7 @@ var SelectLayer = cc.Layer.extend({
             this.addChild(this.Block[i]);
             var j=i+1;
 
-            this.NumItem[i]=new cc.MenuItemImage("res/SelectScene/Num_"+j+".png","res/SelectScene/Num_"+j+".png",function(){
+            this.NumItem[i]=new cc.MenuItemImage("res/images/SelectScene/Num_"+j+".png","res/images/SelectScene/Num_"+j+".png",function(){
                 cc.director.runScene(new MainScene());
             },this);
             this.NumMenu[i]=new cc.Menu(this.NumItem[i]);
@@ -138,7 +138,7 @@ var SelectLayer = cc.Layer.extend({
             //建立数字图片
             var j=i+1;
 
-            this.NumItem[i]=new cc.MenuItemImage("res/SelectScene/Num_"+j+".png","res/SelectScene/Num_"+j+".png",function(){
+            this.NumItem[i]=new cc.MenuItemImage("res/images/SelectScene/Num_"+j+".png","res/images/SelectScene/Num_"+j+".png",function(){
                 cc.director.runScene(new MainScene());
             },this);
             this.NumMenu[i]=new cc.Menu(this.NumItem[i]);

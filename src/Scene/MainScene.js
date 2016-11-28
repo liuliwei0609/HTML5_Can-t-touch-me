@@ -13,14 +13,6 @@ var MainLayer = cc.Layer.extend({
         bg.y=size.height/2;
         this.addChild(bg);
 
-        var player=new Player();
-        player.x=size.width/2;
-        player.y=size.height/2;
-        this.addChild(player);
-        this.player=player;
-
-
-
         var diedLabel=new cc.LabelTTF("死亡");
         diedLabel.setFontSize(size.width/22);
         var diedItem=new cc.MenuItemLabel(diedLabel,function(){
