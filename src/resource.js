@@ -1,7 +1,7 @@
 var res = {
     //开始界面
     HelloWorld_png : "res/HelloWorld.png",
-    Bg_jpg:"res/images/StartScene/bg.jpg",
+    Bg_jpg:"res/images/StartScene/bg.png",
     Play1_png:"res/images/StartScene/sjx1.png",
     Play2_png:"res/images/StartScene/sjx2.png",
     Pop_png:"res/images/StartScene/pop.png",
@@ -44,7 +44,16 @@ var res = {
     Num_8_png:"res/images/SelectScene/Num_8.png",
     Num_9_png:"res/images/SelectScene/Num_9.png",
     //替代图片
-    button_png:"res/images/button.png"
+    button_png:"res/images/button.png",
+    //主界面
+    ground_png:"res/images/ground.png",
+    tileUp1_png:"res/images/tiles1.png",
+    bg_png:"res/images/bg.png",
+    hills_png:"res/images/hills.png",
+    s_tiles_png:"res/images/s_tiles.png",
+    //瓦片地图
+    TMX_spritesheet_tiles_png:"res/images/tiles.png",
+    TMX_spritesheet_complete_tmx:"res/images/testMap.tmx"
 };
 
 var g_resources = [];
