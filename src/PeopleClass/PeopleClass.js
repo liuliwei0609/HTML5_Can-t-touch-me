@@ -7,10 +7,7 @@ var PeopleClass = cc.Sprite.extend({
     ctor:function(fileName, rect, rotated) {
         this._super(fileName, rect, rotated);
 
-        //站立
-        // var people=new cc.Sprite(res.Stand_right_png);
-        // this.people=people;
-        // this.addChild(people);
+
         // 跑动动画封装
         var run_animation_right=new cc.Animation();
         for(var i=1;i<3;i++)
@@ -92,7 +89,6 @@ var PeopleClass = cc.Sprite.extend({
         cc.eventManager.addListener(listener,this);
         this.listener = listener;
 
-
     },
     onExit:function(){
         this._super();
@@ -135,6 +131,19 @@ var PeopleClass = cc.Sprite.extend({
         people_animation_left.setRestoreOriginalFrame(true);
         return people_animation_left;
 
+    },
+
+    //道具1使用效果
+    usePropOne:function(){
+        console.log("道具1被使用");
+    },
+    //道具2使用效果
+    usePropTwo:function(){
+        console.log("道具2被使用");
+    },
+    //道具3使用效果
+    usePropThree:function(){
+        console.log("道具3被使用");
     },
     aa:function () {
         cc.log(11111);

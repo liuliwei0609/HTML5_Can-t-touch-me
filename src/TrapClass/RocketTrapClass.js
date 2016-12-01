@@ -1,22 +1,13 @@
 var RocketTrapClass = cc.Sprite.extend({
-    rocketTrap:null,
+    boolNum:0,
     ctor:function(fileName, rect, rotated) {
         this._super(fileName, rect, rotated);
         var size=cc.winSize;
-        var trap=new cc.Sprite(res.Rocket_Fly1);
-        this.rocketTrap=trap;
-        this.addChild(trap);
-        this.killPlayer();
         this.fly();
-        this.schedule(this.rocket,0.1);
-
+        this.schedule(this.rocket,0.01);
     },
     onExit:function(){
         this._super();
-    },
-    killPlayer:function()
-    {
-
     },
     fly:function()
     {
@@ -29,19 +20,31 @@ var RocketTrapClass = cc.Sprite.extend({
         rocket_animation.setDelayPerUnit(1/8);
         rocket_animation.setRestoreOriginalFrame(true);
         var fly=cc.animate(rocket_animation);
-        this.rocketTrap.runAction(fly.repeatForever());
+        this.runAction(fly.repeatForever());
     },
     rocket:function()
     {
-        this.rocketTrap.x-=6;
-        // var x=this.rocketTrap.getPosition().x;
-        // var y=this.rocketTrap.getPosition().y;
-        // cc.log(x);
-        // cc.log(y);
-        if(this.rocketTrap.x<=-450)
+        if(0==this.boolNum)
         {
-            this.removeChild(this.rocketTrap);
-            this.addChild(this.rocketTrap);
+            this.x-=6;
+            if(this.x<=0)
+            {
+                this.boolNum=1;
+                this.runAction(cc.flipX(true));
+            }
         }
+        else if(1==this.boolNum)
+        {
+            this.x+=6;
+            if(this.x>=cc.winSize.width)
+            {
+                this.boolNum=0;
+                this.runAction(cc.flipX(false));
+            }
+        }
+
     }
+
+
+
 });
