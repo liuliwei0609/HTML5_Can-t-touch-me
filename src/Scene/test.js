@@ -1,113 +1,203 @@
 var HelloWorldLayer = cc.Layer.extend({
     sprite:null,
-    prop:null,
-    enemy:[],
+    people:null,
     trapTrap:null,
     rocketTrap:null,
+    block:[],
+    trap:[],
+    listener:null,
+    bg:null,
+    bg1:null,
+    YOrder:0,
     ctor:function () {
         //////////////////////////////
         // 1. super init first
         this._super();
         var size = cc.winSize;
 
-        //道具栏文本
-        var propMenuLabel = new cc.LabelTTF("道具栏","",50);
-        propMenuLabel.x = size.width*0.2;
-        propMenuLabel.y = size.height*0.4;
-        this.addChild(propMenuLabel,1);
-        propMenuLabel.setFontFillColor(cc.color.RED);
-        propMenuLabel.enableStroke(cc.color.YELLOW,5);
-        propMenuLabel.enableShadow(cc.color.GREEN,cc.p(5,5),5);
+        // var people=new PeopleClass(res.Stand_right_png);
+        // people.setAnchorPoint(0.5,1);
+        // this.people=people;
+        // people.x=size.width/2;
+        // people.y=size.height/2;
+        // this.addChild(people);
+        //
+        // var trapTrap=new TrapTrapClass(res.Cactus_png);
+        // this.trapTrap=trapTrap;
+        // trapTrap.x=size.width*0.8;
+        // trapTrap.y=size.height/2;
+        // this.addChild(trapTrap);
+        //
+        //
+        // var rocketTrap=new RocketTrapClass(res.Rocket_Fly1);
+        // rocketTrap.x=size.width*0.8;
+        // rocketTrap.y=size.height/2;
+        // this.addChild(rocketTrap);
+        // this.rocketTrap=rocketTrap;
+        //
+        // this.schedule(this.TrapCollisionDetection,1);
+        //
+        // BlockClass.prototype.type="block";
+        // var block=new BlockClass(res.block_png);
+        // block.x=size.width*0.7;
+        // block.y=size.height*0.6;
+        // this.block=block;
+        // this.addChild(block);
+        //
+        // this.schedule(this.BlockCollisionDetection,0.01);
 
-        //道具栏
-        var prop = new PropClass();
-        this.addChild(prop,1);
-        this.prop = prop;
+        //创建视差背景
+        this.bg = new cc.ParallaxNode();
+        this.bg1 = new cc.Sprite(res.Bg2_jpg);
+        this.block[0]=new BlockClass(res.floor_block_png);
+        this.block[0].setScale(14,0.8);
+        this.block[0].setAnchorPoint(0.5,1);
+        //
+        this.block[1]=new BlockClass(res.block_png);
+        this.block[1].setScale(2,0.8);
+        this.block[1].setAnchorPoint(0.5,1);
 
-        //敌人1类1
-        var enemyOne = new EnemyClass(res1);
-        // enemyOne.x = size.width* 0.7;
-        // enemyOne.y = size.height* 0.7;
-        this.addChild(enemyOne);
-        cc.log("1lei");
-        this.enemy[1] = enemyOne;
+        //坐标错误
+        this.bg.addChild(this.bg1, 0, cc.p(0.5, 0), cc.p(this.bg1.width / 2, this.bg1.height / 2));
+        this.bg.addChild(this.block[0], 1, cc.p(0.5, 0), cc.p(this.block[0].width*0.1, this.block[0].height*2));
+        this.bg.addChild(this.block[1], 1, cc.p(0.5, 0), cc.p(this.block[1].width*2, this.block[1].height*4));
+        this.addChild(this.bg);
 
-        // //敌人1类2
-        // var enemyOne2 = new Enemys(1);
-        // var size = cc.winSize;
-        // enemyOne2.x = size.width* 0.3;
-        // enemyOne2.y = size.height* 0.7;
-        // this.addChild(enemyOne2);
-        // cc.log("1lei2");
-        // this.enemy[2] = enemyOne2;
-        //敌人2
-        var enemyTwo = new EnemyClass(2);
-        // enemyTwo.x = size.width* 0.5;
-        // enemyTwo.y = size.height* 0.7;
-        this.addChild(enemyTwo);
-        cc.log("2lei");
-        this.enemy[2]= enemyTwo;
 
+        //创建玩家角色
         var people=new PeopleClass(res.Stand_right_png);
-        this.people=people;
-        people.x=size.width/2;
-        people.y=size.height/2;
+        people.x=size.width*0.1;
+        people.y=size.height*0.2;
         this.addChild(people);
+        this.people=people;
+        //重新设置角色的锚点
+        this.people.setAnchorPoint(0.5,0);
 
-        var trapTrap=new TrapTrapClass(res.Cactus_png);
-        this.trapTrap=trapTrap;
-        trapTrap.x=size.width*0.8;
-        trapTrap.y=size.height/2;
-        this.addChild(trapTrap);
+        // //创建材质
+        // var block=new BlockClass(res.floor_block_png);
+        // block.x=size.width*0.1;
+        // block.y=size.height*0.5;
+        // this.block[0]=block;
+        // this.addChild(block);
+        this.schedule(this.BlockCollisionDetection,0.001);
+        // this.block[0].setAnchorPoint(0.5,1);
+
+        //跳跃
+        var isJumping=false;
+        var jump=cc.sequence(cc.jumpBy(1,cc.p(0,0),600,1),cc.callFunc(function(){
+            isJumping=false;
+        }));
 
 
-        var rocketTrap=new RocketTrapClass(res.Rocket_Fly1);
-        rocketTrap.x=size.width*0.8;
-        rocketTrap.y=size.height/2;
-        this.addChild(rocketTrap);
-        this.rocketTrap=rocketTrap;
 
-        this.schedule(this.TrapTrapCollisionDetection,0.1);
-        this.schedule(this.RocketTrapCollisionDetection,0.1);
-        this.schedule(this.EnemyOneCollisionDetection,0.1);
-        this.schedule(this.EnemyTwoCollisionDetection,0.1);
+
+
+
+        var that=this;
+
+        //事件侦听
+        var listener = cc.EventListener.create({
+            event: cc.EventListener.TOUCH_ONE_BY_ONE,
+            swallowTouches: true,
+            onTouchBegan: function (touch, event) {
+                var location=touch.getLocation();
+                var target = event.getCurrentTarget();//实例化地图对象
+                var people_location=that.people.getPosition();//获取人物在屏幕上的坐标
+                var map_location=target.getPosition();//获取地图在屏幕上的坐标
+                if(location.x>cc.winSize.width/2)
+                {
+                    if(people_location.x<=size.width/2)
+                    {
+                        that.people.runAction(that.people.run_animate_right);
+                        that.people.x+=20;
+                    }
+                    else
+                    {
+                        if(-map_location.x+size.width>=that.bg1.getContentSize().width)
+                        {
+                            that.people.runAction(that.people.run_animate_right);
+                            that.people.x+=20;
+                        }
+                        else
+                        {
+                            that.people.runAction(that.people.run_animate_right);
+                            target.setPositionX(target.getPosition().x-=20);
+                            cc.log(-map_location.x);
+                        }
+                    }
+                    // cc.log(that.people.y);
+                }
+
+                if(location.x<=cc.winSize.width/2)
+                {
+                    if(people_location.x>=size.width/2)
+                    {
+                        that.people.runAction(that.people.run_animate_left);
+                        that.people.x-=20;
+                    }
+                    else
+                    {
+                        if(-map_location.x<=0)
+                        {
+                            that.people.runAction(that.people.run_animate_left);
+                            that.people.x-=20;
+                        }
+                        else
+                        {
+                            that.people.runAction(that.people.run_animate_left);
+                            target.setPositionX(target.getPosition().x+=20);
+                        }
+                    }
+                }
+                return true;
+            },
+            onTouchMoved: function (touch, event) {
+                if(isJumping==false)
+                {
+                    // that.people.runAction(jump);
+                    isJumping=true;
+                    that.people.runAction(jump);
+                }
+            },
+            onTouchEnded: function (touch, event) {
+                // 点击事件结束处理
+            },
+        });
+
+
+        // 注册监听器
+        cc.eventManager.addListener(listener, this.bg);
+        this.listener=listener;
 
         return true;
     },
-    RocketTrapCollisionDetection:function()
+    // TrapCollisionDetection:function()
+    // {
+    //     var peopleBox=this.people.getBoundingBox();
+    //     var rocketTrapBox=this.rocketTrap.getBoundingBox();
+    //     if(cc.rectIntersectsRect(peopleBox,rocketTrapBox))
+    //     {
+    //         cc.log("碰撞到陷阱，死亡");
+    //     }
+    // },
+    BlockCollisionDetection:function(dt)
     {
-        var peopleBox=this.people.getBoundingBox();
-        var rocketTrapBox=this.rocketTrap.getBoundingBox();
-        if(cc.rectIntersectsRect(peopleBox,rocketTrapBox))
+
+        var peoplePoint=this.people.getPosition();
+        for(var i=0;i<this.block.length;i++)
         {
-            cc.log("碰撞到火箭，死亡");
-        }
-    },
-    TrapTrapCollisionDetection:function()
-    {
-        var peopleBox=this.people.getBoundingBox();
-        var trapTrapBox=this.trapTrap.getBoundingBox();
-        if(cc.rectIntersectsRect(peopleBox,trapTrapBox))
-        {
-            cc.log("碰撞到陷阱，死亡");
-        }
-    },
-    EnemyOneCollisionDetection:function()
-    {
-        var peopleBox=this.people.getBoundingBox();
-        var enemyOneBox=this.enemy[1].getBoundingBox();
-        if(cc.rectIntersectsRect(peopleBox,enemyOneBox))
-        {
-            cc.log("碰撞到敌人1，死亡");
-        }
-    },
-    EnemyTwoCollisionDetection:function()
-    {
-        var peopleBox=this.people.getBoundingBox();
-        var enemyTwoBox=this.enemy[2].getBoundingBox();
-        if(cc.rectIntersectsRect(peopleBox,enemyTwoBox))
-        {
-            cc.log("碰撞到敌人2，死亡");
+            var blockBox=this.block[i].getBoundingBox();
+            if(cc.rectContainsPoint(blockBox,peoplePoint))
+            {
+                this.people.setPositionY(this.block[i].y);
+                this.YOrder=0;
+            }
+            // else
+            // {
+            //     //定义每秒下落位移
+            //     this.YOrder+=10*dt;
+            //     this.people.y-=this.YOrder;
+            // }
         }
     }
 });
@@ -119,3 +209,5 @@ var HelloWorldScene = cc.Scene.extend({
         this.addChild(layer);
     }
 });
+
+
