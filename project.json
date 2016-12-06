@@ -14,6 +14,8 @@
     "jsList" : [
         "src/resource.js",
         "src/EnemyClass/EnemyClass.js",
+        "src/Class/EnemyClass/EnemyOne.js",
+        "src/Class/EnemyClass/EnemyTwo.js",
         "src/PeopleClass/PeopleClass.js",
         "src/PropClass/PropClass.js",
         "src/Scene/FailedScene.js",

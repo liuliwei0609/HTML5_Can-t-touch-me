@@ -41,6 +41,20 @@ var HelloWorldLayer = cc.Layer.extend({
         this.rocketTrap[0].x=size.width*0.7;
         this.rocketTrap[0].y=size.height*0.5;
 
+         //敌人1(1)
+        var enemyOne = new EnemyClassOne(res.EnemyRun1_png);
+        enemyOne.x = size.width*0.5;
+        enemyOne.y = size.height*0.5;
+        this.addChild(enemyOne,1);
+        this.enemyOne[0] = enemyOne;
+
+        //敌人2(2)
+        var enemyTwo = new EnemyClassTwo(res.Run1_png);
+        enemyTwo.x = 400;
+        enemyTwo.y = 700;
+        this.addChild(enemyTwo,1);
+        this.enemyTwo[0]= enemyTwo;
+
         this.bg.addChild(this.bg1, 0, cc.p(1.0, 1.0), cc.p(this.bg1.width / 2, this.bg1.height / 2));
 
         this.addChild(this.bg);
@@ -92,8 +106,16 @@ var HelloWorldLayer = cc.Layer.extend({
                     {
                         if(-map_location.x+size.width>=that.bg1.getContentSize().width)
                         {
-                            that.people.runAction(that.people.run_animate_right);
-                            that.people.x+=20;
+                            if(people_location.x>cc.winSize.width-that.people.getBoundingBox().width/2)
+                            {
+                                console.log("出→");
+                                that.people.runAction(that.people.run_animate_right);
+
+                            }
+                            else {
+                                that.people.runAction(that.people.run_animate_right);
+                                that.people.x += 20;
+                            }
                         }
                         else
                         {
@@ -113,6 +135,16 @@ var HelloWorldLayer = cc.Layer.extend({
                                 that.rocketTrap[i].x-=20;
                                 that.rocketTrap[i].rangeX-=20;
                             }
+                            for(var i=0;i<that.enemyOne.length;i++)
+                            {
+                                that.enemyOne[i].x-=20;
+                                that.enemyOne[i].rangeX-=20;
+                            }
+                            for(var i=0;i<that.enemyTwo.length;i++)
+                            {
+                                that.enemyTwo[i].x-=20;
+                                that.enemyTwo[i].rangeX-=20;
+                            }
                         }
                     }
                     // cc.log(that.people.y);
@@ -128,25 +160,42 @@ var HelloWorldLayer = cc.Layer.extend({
                     {
                         if(-map_location.x<=0)
                         {
-                            that.people.runAction(that.people.run_animate_left);
-                            that.people.x-=20;
+                            if (people_location.x <0+that.people.getBoundingBox(). width / 2) {
+                                console.log("出左");
+                                that.people.runAction(that.people.run_animate_left);
+
+                            }
+                            else {
+                                that.people.runAction(that.people.run_animate_left);
+                                that.people.x -= 20;
+                            }
                         }
                         else
                         {
                             that.people.runAction(that.people.run_animate_left);
                             target.setPositionX(target.getPosition().x+=20);
-                            for(var i=0;i<that.block.length;i++)
+                             for(var i=0;i<that.block.length;i++)
                             {
-                                that.block[i].x+=20;
+                                that.block[i].x +=20;
                             }
                             for(var i=0;i<that.trapTrap.length;i++)
                             {
-                                that.trapTrap[i].x+=20;
+                                that.trapTrap[i].x +=20;
                             }
                             for(var i=0;i<that.rocketTrap.length;i++)
                             {
-                                that.rocketTrap[i].x+=20;
-                                that.rocketTrap[i].rangeX+=20;
+                                that.rocketTrap[i].x +=20;
+                                that.rocketTrap[i].rangeX +=20;
+                            };
+                            for(var i=0;i<that.enemyOne.length;i++)
+                            {
+                                that.enemyOne[i].x +=20;
+                                that.enemyOne[i].rangeX +=20;
+                            };
+                            for(var i=0;i<that.enemyTwo.length;i++)
+                            {
+                                that.enemyTwo[i].x+=20;
+                                that.enemyTwo[i].rangeX+=20;
                             }
                         }
                     }
