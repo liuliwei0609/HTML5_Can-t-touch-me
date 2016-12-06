@@ -1,7 +1,8 @@
 var RocketTrapClass = cc.Sprite.extend({
     boolNum:0,
-    ctor:function(fileName, rect, rotated) {
-        this._super(fileName, rect, rotated);
+    rangeX:0,
+    ctor:function(fileName,x) {
+        this._super(fileName,x);
         var size=cc.winSize;
         this.fly();
         this.schedule(this.rocket,0.01);
@@ -27,7 +28,7 @@ var RocketTrapClass = cc.Sprite.extend({
         if(0==this.boolNum)
         {
             this.x-=6;
-            if(this.x<=0)
+            if(this.x<=200+this.rangeX)
             {
                 this.boolNum=1;
                 this.runAction(cc.flipX(true));
@@ -36,7 +37,7 @@ var RocketTrapClass = cc.Sprite.extend({
         else if(1==this.boolNum)
         {
             this.x+=6;
-            if(this.x>=cc.winSize.width)
+            if(this.x>=500+this.rangeX)
             {
                 this.boolNum=0;
                 this.runAction(cc.flipX(false));
