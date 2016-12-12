@@ -1,7 +1,7 @@
 var res = {
     //开始界面
     HelloWorld_png : "res/HelloWorld.png",
-    Bg_jpg:"res/StartScene/bg.jpg",
+    Bg_png:"res/StartScene/bg_6144_1.png",
     Bg2_jpg:"res/StartScene/bg2.jpg",
     Play1_png:"res/StartScene/sjx1.png",
     Play2_png:"res/StartScene/sjx2.png",
@@ -48,6 +48,11 @@ var res = {
     Num_8_png:"res/SelectScene/Num_8.png",
     //载入界面
     bg_jpg:"res/Loading/background.jpg",
+    //材质
+    floor_block_png:"res/Block/floor_block.png",
+    block_png:"res/Block/block.png",
+    diamond_png:"res/Block/diamond.png",
+    passLevel_png:"res/Block/passLevel.png",
     //敌人1
     EnemyRun1_png:"res/EnemyRun/run1.png",
     EnemyRun2_png:"res/EnemyRun/run2.png",
@@ -60,9 +65,6 @@ var res = {
     Run4_png:"res/Run/run4.png",
     Run5_png:"res/Run/run5.png",
     Run6_png:"res/Run/run6.png",
-    //材质
-    floor_block_png:"res/Block/floor_block.png",
-    block_png:"res/Block/block.png"
 };
 
 var g_resources = [];

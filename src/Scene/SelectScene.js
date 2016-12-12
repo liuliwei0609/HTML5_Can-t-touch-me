@@ -1,5 +1,3 @@
-//未实现第二个界面
-//未实现点击图片进入选关
 
 var SelectLayer = cc.Layer.extend({
     sprite:null,
@@ -25,18 +23,16 @@ var SelectLayer = cc.Layer.extend({
         this.addChild(bg);
 
         var ls=cc.sys.localStorage;
-        //设定目前的通关数
-        ls.setItem("PassedLevels",null);
-        //设定每关的评分数
-        ls.setItem("PerLevelsStarNum",2312);
-        // cc.log(ls.getItem("PerLevelsStarNum"));
+        // //设定目前的通关数（删除）
+        // ls.setItem("PassedLevels",1);
+        // //设定每关的评分数（删除）
+        // ls.setItem("PerLevelsStarNum",null);
 
         //计算总评分数
         var StarCount=0;
         for(var i=0;i<ls.getItem("PassedLevels");i++)
         {
             StarCount+=parseInt(ls.getItem("PerLevelsStarNum")[i]);
-            // cc.log(ls.getItem("PerLevelsStarNum")[i]);
 
         }
         // cc.log(StarCount);
@@ -68,7 +64,7 @@ var SelectLayer = cc.Layer.extend({
             this.addChild(this.Block[i]);
             var j=i+1;
 
-            this.NumItem[i]=new cc.MenuItemImage("res/images/SelectScene/Num_"+j+".png","res/images/SelectScene/Num_"+j+".png",function(){
+            this.NumItem[i]=new cc.MenuItemImage("res/SelectScene/Num_"+j+".png","res/SelectScene/Num_"+j+".png",function(){
                 cc.director.runScene(new MainScene());
             },this);
             this.NumMenu[i]=new cc.Menu(this.NumItem[i]);
@@ -138,7 +134,7 @@ var SelectLayer = cc.Layer.extend({
             //建立数字图片
             var j=i+1;
 
-            this.NumItem[i]=new cc.MenuItemImage("res/images/SelectScene/Num_"+j+".png","res/images/SelectScene/Num_"+j+".png",function(){
+            this.NumItem[i]=new cc.MenuItemImage("res/SelectScene/Num_"+j+".png","res/SelectScene/Num_"+j+".png",function(){
                 cc.director.runScene(new MainScene());
             },this);
             this.NumMenu[i]=new cc.Menu(this.NumItem[i]);

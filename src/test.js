@@ -1,15 +1,21 @@
 var audioEngine=cc.audioEngine; //音乐基类
-
+var diamondNum=1;//本关钻石数目
 var HelloWorldLayer = cc.Layer.extend({
     sprite:null,
     people:null,
-    trapTrap:[],
-    rocketTrap:[],
-    block:[],
+    trapTrap:[],  //普通陷阱（钉刺）数组，用的时候先查找一下关键词
+    rocketTrap:[], //导弹陷阱数组
+    // springTrap:[], //弹簧陷阱数组，现在不能用
+    block:[], //材质数组，包括地面和空中的材质
     listener:null,
-    bg:null,
-    bg1:null,
-    YOrder:0,
+    bg:null, //视差父节点
+    bg1:null, //背景图片
+    YOrder:0, //单位时间内的位移
+    enemyOne:[], //第一种敌人
+    enemyTwo:[], //第二种敌人
+    diamond:[],//界面中显示的钻石
+    activate:false,//激活火箭等发射
+    flag:0,
     ctor:function () {
         //////////////////////////////
         // 1. super init first
@@ -19,41 +25,45 @@ var HelloWorldLayer = cc.Layer.extend({
         //创建视差背景
         this.bg = new cc.ParallaxNode();
         this.bg1 = new cc.Sprite(res.Bg2_jpg);
-        //创建材质
+        //创建地面材质
         this.block[0]=new BlockClass(res.floor_block_png);
         this.block[0].setScale(14,0.8);
         this.block[0].setAnchorPoint(0.5,1);
         this.block[0].x=size.width/2;
         this.block[0].y=size.height*0.2;
-
+        //创建浮空材质
         this.block[1]=new BlockClass(res.block_png);
         this.block[1].setScale(2,0.8);
         this.block[1].setAnchorPoint(0.5,1);
         this.block[1].x=size.width*0.6;
         this.block[1].y=size.height*0.4;
-
-
+        //创建陷阱
         this.trapTrap[0]=new TrapTrapClass(res.Cactus_png);
         this.trapTrap[0].x=size.width*0.6;
         this.trapTrap[0].y=size.height*0.5;
-
-        this.rocketTrap[0]=new RocketTrapClass(res.Cactus_png);
+        //创建陷阱
+        this.rocketTrap[0]=new RocketTrapClass(res.Rocket_Fly1);
         this.rocketTrap[0].x=size.width*0.7;
         this.rocketTrap[0].y=size.height*0.5;
 
-         //敌人1(1)
-        var enemyOne = new EnemyClassOne(res.EnemyRun1_png);
-        enemyOne.x = size.width*0.5;
-        enemyOne.y = size.height*0.5;
-        this.addChild(enemyOne,1);
-        this.enemyOne[0] = enemyOne;
+        this.diamond[0]=new cc.Sprite(res.diamond_png);
+        this.diamond[0].x=size.width*0.9;
+        this.diamond[0].y=size.height*0.5;
+        // //创建陷阱
+        // this.springTrap[0]=new SpringTrapClass(res.Cactus_png);
+        // this.springTrap[0].x=size.width*0.3;
+        // this.springTrap[0].y=size.height*0.3;
 
-        //敌人2(2)
-        var enemyTwo = new EnemyClassTwo(res.Run1_png);
-        enemyTwo.x = 400;
-        enemyTwo.y = 700;
-        this.addChild(enemyTwo,1);
-        this.enemyTwo[0]= enemyTwo;
+        //创建第一种敌人
+        this.enemyOne[0]=new EnemyClassOne(res.EnemyRun1_png);
+        this.enemyOne[0].x=size.width*0.5;
+        this.enemyOne[0].y=size.height*0.5;
+
+        //创建第二种敌人
+        this.enemyTwo[0]=new EnemyClassTwo(res.Run1_png);
+        this.enemyTwo[0].x=size.width*0.7;
+        this.enemyTwo[0].y=size.height*0.7;
+
 
         this.bg.addChild(this.bg1, 0, cc.p(1.0, 1.0), cc.p(this.bg1.width / 2, this.bg1.height / 2));
 
@@ -62,6 +72,11 @@ var HelloWorldLayer = cc.Layer.extend({
         this.addChild(this.block[1],1);
         this.addChild(this.trapTrap[0],1);
         this.addChild(this.rocketTrap[0],1);
+        // this.addChild(this.springTrap[0],1);
+        this.addChild(this.enemyOne[0],1);
+        this.addChild(this.enemyTwo[0],1);
+        this.addChild(this.diamond[0],1);
+
 
 
 
@@ -83,7 +98,7 @@ var HelloWorldLayer = cc.Layer.extend({
             isJumping=false;
         }));
 
-        this.schedule(this.TrapCollisionDetection,0.01);
+        this.schedule(this.TrapCollisionDetection,0.1);
 
         var that=this;
 
@@ -106,15 +121,14 @@ var HelloWorldLayer = cc.Layer.extend({
                     {
                         if(-map_location.x+size.width>=that.bg1.getContentSize().width)
                         {
-                            if(people_location.x>cc.winSize.width-that.people.getBoundingBox().width/2)
+                            if(that.people.x>=size.width-that.people.getBoundingBox().width/2)
                             {
-                                console.log("出→");
                                 that.people.runAction(that.people.run_animate_right);
-
                             }
-                            else {
+                            else
+                            {
                                 that.people.runAction(that.people.run_animate_right);
-                                that.people.x += 20;
+                                that.people.x+=20;
                             }
                         }
                         else
@@ -145,6 +159,10 @@ var HelloWorldLayer = cc.Layer.extend({
                                 that.enemyTwo[i].x-=20;
                                 that.enemyTwo[i].rangeX-=20;
                             }
+                            for(var i=0;i<that.diamond.length;i++)
+                            {
+                                that.diamond[i].x-=20;
+                            }
                         }
                     }
                     // cc.log(that.people.y);
@@ -160,42 +178,45 @@ var HelloWorldLayer = cc.Layer.extend({
                     {
                         if(-map_location.x<=0)
                         {
-                            if (people_location.x <0+that.people.getBoundingBox(). width / 2) {
-                                console.log("出左");
+                            if(that.people.x<=0+that.people.getBoundingBox().width/2)
+                            {
                                 that.people.runAction(that.people.run_animate_left);
-
                             }
-                            else {
+                            else
+                            {
                                 that.people.runAction(that.people.run_animate_left);
-                                that.people.x -= 20;
+                                that.people.x-=20;
                             }
                         }
                         else
                         {
                             that.people.runAction(that.people.run_animate_left);
                             target.setPositionX(target.getPosition().x+=20);
-                             for(var i=0;i<that.block.length;i++)
+                            for(var i=0;i<that.block.length;i++)
                             {
-                                that.block[i].x +=20;
+                                that.block[i].x+=20;
                             }
                             for(var i=0;i<that.trapTrap.length;i++)
                             {
-                                that.trapTrap[i].x +=20;
+                                that.trapTrap[i].x+=20;
                             }
                             for(var i=0;i<that.rocketTrap.length;i++)
                             {
-                                that.rocketTrap[i].x +=20;
-                                that.rocketTrap[i].rangeX +=20;
-                            };
-                            for(var i=0;i<that.enemyOne.length;i++)
-                            {
-                                that.enemyOne[i].x +=20;
-                                that.enemyOne[i].rangeX +=20;
-                            };
+                                that.rocketTrap[i].x+=20;
+                                that.rocketTrap[i].rangeX+=20;
+                            }
+                            for(var i=0;i<that.enemyOne.length;i++) {
+                                that.enemyOne[i].x += 20;
+                                that.enemyOne[i].rangeX += 20;
+                            }
                             for(var i=0;i<that.enemyTwo.length;i++)
                             {
                                 that.enemyTwo[i].x+=20;
                                 that.enemyTwo[i].rangeX+=20;
+                            }
+                            for(var i=0;i<that.diamond.length;i++)
+                            {
+                                that.diamond[i].x+=20;
                             }
                         }
                     }
@@ -238,41 +259,112 @@ var HelloWorldLayer = cc.Layer.extend({
         settingMenu.y=size.height*0.95;
         this.addChild(settingMenu);
 
+        this.schedule(this.fireRocket,0.1);//当玩家靠近火箭时，火箭发射
+
+        // this.schedule(this.SpringTrapCollisionDetection,0.01);
+
+        this.schedule(this.DiamondCollisionDetection,0.5);
+
+
+
 
         return true;
     },
-    TrapCollisionDetection:function()
+    TrapCollisionDetection:function()  //陷阱碰撞检测
     {
         var peopleBox=this.people.getBoundingBox();
         var trapBox=this.trapTrap[0].getBoundingBox();
         if(cc.rectIntersectsRect(peopleBox,trapBox))
         {
-            cc.log("碰撞到陷阱，死亡");
+            //碰到陷阱死亡时，最多有1个星时，满足吃完所有钻石，不满足规定时间内通关，不满足通关
+            if(diamondNum==0)
+            {
+                cc.log("星数+1");
+            }
+            // cc.log();
         }
     },
-    BlockCollisionDetection:function(dt)
+    BlockCollisionDetection:function(dt)  //材质碰撞检测
     {
+        // var peoplePoint=this.people.getPosition();
+        // for(var i=0;i<this.block.length;i++)
+        // {
+        //     var blockBox=this.block[i].getBoundingBox();
+        //     if(cc.rectContainsPoint(blockBox,peoplePoint))
+        //     {
+        //         this.people.setPositionY(this.block[i].y);
+        //         this.YOrder=0;
+        //     }
+        //     else
+        //     {
+        //         //定义每秒下落位移
+        //         this.YOrder+=10*dt;
+        //         this.people.y-=this.YOrder;
+        //         if(200==this.people.y)
+        //         {
+        //             this.people.setPositionY(200);
+        //         }
+        //     }
+        // }
         var peoplePoint=this.people.getPosition();
         for(var i=0;i<this.block.length;i++)
         {
             var blockBox=this.block[i].getBoundingBox();
             if(cc.rectContainsPoint(blockBox,peoplePoint))
             {
-                this.people.setPositionY(this.block[i].y);
-                this.YOrder=0;
-            }
-            else
-            {
-                //定义每秒下落位移
-                this.YOrder+=10*dt;
-                this.people.y-=this.YOrder;
-                if(200==this.people.y)
-                {
-                    this.people.setPositionY(200);
-                }
+                this.flag=i;
             }
         }
+        if(cc.rectContainsPoint(this.block[this.flag].getBoundingBox(),peoplePoint))
+        {
+            this.people.setPositionY(this.block[this.flag].y);
+            this.YOrder=0;
+        }
+        else
+        {
+            //定义每秒下落位移
+            this.YOrder+=10*dt;
+            this.people.y-=this.YOrder;
+        }
+
+    },
+    fireRocket:function()  //判断人物靠近发射火箭
+    {
+        if(this.activate==true)
+        {
+            this.rocketTrap[0].rocket();
+        }
+        else if(this.trapTrap[0].x-this.people.x<=100)
+        {
+            this.rocketTrap[0].rocket();
+            this.activate=true;
+        }
+
+    },
+    RocketTrapCollisionDetection:function()  //火箭陷阱碰撞检测
+    {
+        //
+    },
+    DiamondCollisionDetection:function()  //钻石碰撞检测
+    {
+        var peopleBox=this.people.getBoundingBox();
+        var diamondBox=this.diamond[0].getBoundingBox();
+        if(cc.rectIntersectsRect(peopleBox,diamondBox))
+        {
+            diamondNum--;
+            this.diamond[0].setVisible(false);
+        }
+        cc.log(diamondNum);
     }
+    // SpringTrapCollisionDetection:function()
+    // {
+    //     var peoplePoint=this.people.getPosition();
+    //     var springTrapBox=this.springTrap[0].getBoundingBox();
+    //     if(cc.rectContainsPoint(springTrapBox,peoplePoint))
+    //     {
+    //         //跳跃
+    //     }
+    // },
 });
 
 var PopLayer = cc.Layer.extend({

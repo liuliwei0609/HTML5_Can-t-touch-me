@@ -3,6 +3,7 @@
 var FailedLayer = cc.Layer.extend({
     sprite:null,
     starImg:[],
+    failImg:[],
     ctor:function () {
         this._super();
 
@@ -13,33 +14,35 @@ var FailedLayer = cc.Layer.extend({
         bg.y=size.height/2;
         this.addChild(bg);
         //失败label创建
-        var failedLabel = new cc.MenuItemImage(res.button_png,res.button_png,50);
+        var failedLabel = new cc.LabelTTF("失败","",50);
         failedLabel.x = size.width*0.5;
         failedLabel.y = size.height*0.8;
+        failedLabel.setFontFillColor(cc.color.RED);
+        failedLabel.enableStroke(cc.color.YELLOW,5);
+        failedLabel.enableShadow(cc.color.GREEN,cc.p(5,5),5);
         this.addChild(failedLabel);
 
         //星级评定
         var ls = cc.sys.localStorage;
-        ls.setItem("star",1);  //修改此处可以修改星星数量
-        if (null == ls.getItem("star")) {  //不存在star数量
+        if (null == ls.getItem("failStar")) {  //不存在star数量
             console.log("还没打游戏怎么到这个界面了？");
         }
         else {
-            //存在star数量
-            var starNum = ls.getItem("star");
+            //成功star数量
+            var starNum = parseInt(ls.getItem("failStar"));
             for (var i = 1; i <= starNum; i++) {
                 this.starImg[i] = new cc.Sprite(res.Star_png);
-                this.starImg[i].x = size.width * 0.3 + 138 * i;
+                this.starImg[i].x = size.width * 0.2 + 149* i;
                 this.starImg[i].y = size.height * 0.5;
                 this.addChild(this.starImg[i]);
             }
             // 失败star数量
-            var j=3-starNum;
-            for (; j <= 3; j++) {
-                this.starImg[j] = new cc.Sprite(res.Star_Failed_png);
-                this.starImg[j].x = size.width * 0.3 + 138 * j;
-                this.starImg[j].y = size.height * 0.5;
-                this.addChild(this.starImg[j]);
+            for(var j=starNum+1;j<=3;j++)
+            {
+                this.failImg[j] = new cc.Sprite(res.Star_Failed_png);
+                this.failImg[j].x = size.width * 0.2 + 149 * j;
+                this.failImg[j].y = size.height * 0.5;
+                this.addChild(this.failImg[j]);
             }
         }
 

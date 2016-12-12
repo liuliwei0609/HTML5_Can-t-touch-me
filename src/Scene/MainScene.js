@@ -1,191 +1,314 @@
+var diamondNum=1;//钻石数量(自己修改)
+var passLevelTime=0;//通关时间（秒）
+var ls=cc.sys.localStorage;
+ls.setItem("CurrentLevel",1);//每关必须修改
 
-var MainLayer = cc.Layer.extend({
-    sprite:null,
-    hills:[],
-    s_tiles:[],
-    ctor:function () {
-
+var BgLayer=cc.Layer.extend({
+    bg:null,
+    BgSprite:[],
+    ctor:function()
+    {
         this._super();
+        this.bg=new cc.Sprite(res.Bg_png);
+        this.bg.setAnchorPoint(0,0);
+        this.addChild(this.bg);
+    }
+});
 
-        var size = cc.winSize;
+var SceneLayer=cc.Layer.extend({
+    block:[],//材质
+    trapTrap:[],//陷阱
+    SceneSprite:[],//本层的所有精灵
+    rocketTrap:[],//导弹陷阱
+    diamond:[],//钻石
+    passLevel:null,//过关点
+    //缺敌人类
+    ctor:function()
+    {
+        this._super();
+        var size=cc.winSize;
+        //创建地面材质
+        this.block[0]=new BlockClass(res.floor_block_png);
+        // this.block[0].setScale(14,0.8);
+        this.block[0].setAnchorPoint(0.5,1);
+        this.block[0].x=size.width*0.6;
+        this.block[0].y=size.height*0.2;
+        //创建浮空材质
+        this.block[1]=new BlockClass(res.block_png);
+        // this.block[1].setScale(2,0.8);
+        this.block[1].setAnchorPoint(0.5,1);
+        this.block[1].x=size.width*0.7;
+        this.block[1].y=size.height*0.4;
+        //创建陷阱
+        // this.trapTrap[0]=new TrapTrapClass(res.Cactus_png);
+        // this.trapTrap[0].x=size.width*0.6;
+        // this.trapTrap[0].y=size.height*0.5;
+        //创建火箭
+        // this.rocketTrap[0]=new RocketTrapClass(res.Rocket_Fly1);
+        // this.rocketTrap[0].x=size.width;
+        // this.rocketTrap[0].y=size.height*0.5;
+        //创建钻石
+        this.diamond[0]=new cc.Sprite(res.diamond_png);
+        this.diamond[0].x=size.width*0.7;
+        this.diamond[0].y=size.height/2;
+        //通关材质
+        this.passLevel=new cc.Sprite(res.passLevel_png);
+        this.passLevel.x=size.width*0.6;
+        this.passLevel.y=size.height/2;
 
-        //道具栏
-        // var propMenuLabel = new cc.LabelTTF("道具栏","",50);
-        // propMenuLabel.x = size.width*0.2;
-        // propMenuLabel.y = size.height*0.4;
-        // this.addChild(propMenuLabel,1);
-        // propMenuLabel.setFontFillColor(cc.color.RED);
-        // propMenuLabel.enableStroke(cc.color.YELLOW,5);
-        // propMenuLabel.enableShadow(cc.color.GREEN,cc.p(5,5),5);
+        this.addChild(this.block[0]);
+        this.addChild(this.block[1]);
+        // this.addChild(this.trapTrap[0]);
+        // this.addChild(this.rocketTrap[0]);
+        this.addChild(this.diamond[0]);
+        this.addChild(this.passLevel);
+    }
+});
 
-        //道具栏
-        // var Prop = new Props();
-        // // Prop.x= 300;
-        // // Prop.y= 300;
-        // this.addChild(Prop,1);
+var PlayerLayer=cc.Layer.extend({
+    people:null,
+    listener:null,
+    speed:0,
+    flag:0,
+    ctor:function()
+    {
+        this._super();
+        var size=cc.winSize;
+        this.people=new PeopleClass(res.Stand_right_png);
+        this.people.x=size.width*0.5;
+        this.people.y=size.height*0.4;
+        this.people.setAnchorPoint(0.5,0);
+        this.addChild(this.people);
+        //自由落体
+        this.schedule(this.myCallBack,0.02,cc.REPEAT_FOREVER,0);
+        //陷阱碰撞
+        this.schedule(this.TrapCollisionDetection,0.1,cc.REPEAT_FOREVER,0);
+        //火箭发射
+        // this.schedule(this.fireRocket,0.02,cc.REPEAT_FOREVER,0);
 
-        //瓦片地图测试
-        //var tileMap = new TileMap();
-        //this.addChild(tileMap,4);
-        //碰撞测试
-        var tileMap = new cc.TMXTiledMap(res.TMX_spritesheet_complete_tmx);
-        this.addChild(tileMap,4);
-        var mapSize=tileMap.getMapSize();
-        var tileSize=tileMap.getTileSize();
-        var bgLayer= tileMap.getLayer("BGLayer");
-        var tileAt = bgLayer.getTileAt(cc.p(10,0));
-        // tileAt.setColor(cc.color.BLUE);
-        var tileGIDAt = bgLayer.getTileGIDAt(cc.p(4,0));
-        var pixPosition = bgLayer.getPositionAt(cc.p(1,1));
+        //钻石检测碰撞(评分要素之一)
+        this.schedule(this.DiamondCollisionDetection,0.5,cc.REPEAT_FOREVER,0);
+        //通关时间（评分要素之一）
+        this.schedule(this.passLevelTime,1,cc.REPEAT_FOREVER,0);
 
-        var objectGroup= tileMap.getObjectGroup("object");
-        var player= objectGroup.getObject("player");
-        var pp = new cc.Sprite(res.button_png);
-        pp.setAnchorPoint(cc.p(0,1));
-        pp.x=player.x;
-        pp.y=player.y+tileSize.width;
-        this.addChild(pp,4);
-        function move(movePP) {
-            var newPosition= cc.pAdd(pp.getPosition(),movePP);
-            var tileX = Math.floor(newPosition.x/64);
-            var tileY = Math.floor((size.height - newPosition.y)/64);
-            var tileGID = bgLayer.getTileGIDAt(cc.p(tileX,tileY));
-            var properties = tileMap.getPropertiesForGID(tileGID);
-            /*if(properties == null){
-                sp.setPosition(newPosition);
-                return true;
-            }else if (properties.type == "block"){
-                return true;
-            }else if (properties.type == "eat"){
-                sp.setPosition(newPosition);
-                bgLayer.getTileAt(cc.p(tileX,tileY)).setVisible(false);
-            }else{
-                sp.setPosition(newPosition);
-            }*/
+        this.schedule(this.passLevel,1,cc.REPEAT_FOREVER,0);
 
-        }
+        var that=this;
+
+        //监听器
         var listener = cc.EventListener.create({
-            event:cc.EventListener.KEYBOARD,
-            onKeyPressed:function(key,event){
-                switch(key){
-                    case cc.KEY.up:
-                        move(cc.p(0,32));
-                        break;
-                    case cc.KEY.down:
-                        move(cc.p(0,-32));
-                        break;
-                    case cc.KEY.left:
-                        move(cc.p(-32,0));
-                        break;
-                    case cc.KEY.right:
-                        move(cc.p(32,0));
-                        break;
-                    default:
+            event: cc.EventListener.KEYBOARD,
+            onKeyPressed: function (code, event) {
+                if(code==cc.KEY.right)
+                {
+                    if(-that.getParent().BgLayer.bg.x+size.width>=that.getParent().BgLayer.bg.getContentSize().width)
+                    {
+                        that.getParent().SceneLayer.SceneSprite = that.getParent().SceneLayer.getChildren();
+                        that.getParent().BgLayer.BgSprite = that.getParent().BgLayer.getChildren();
+                        for (var i = 0; i < that.getParent().SceneLayer.SceneSprite.length; i++) {
+                            that.getParent().SceneLayer.SceneSprite[i].stopAllActions();
+                        }
+                        for (var j = 0; j < that.getParent().BgLayer.BgSprite.length; j++) {
+                            that.getParent().BgLayer.BgSprite[j].stopAllActions();
+                        }
+                    }
+                    else {
+                        that.people.runAction(that.people.run_animate_right);
+                        that.getParent().SceneLayer.SceneSprite = that.getParent().SceneLayer.getChildren();
+                        that.getParent().BgLayer.BgSprite = that.getParent().BgLayer.getChildren();
+                        for (var i = 0; i < that.getParent().SceneLayer.SceneSprite.length; i++) {
+                            that.getParent().SceneLayer.SceneSprite[i].runAction(cc.moveBy(0.8, cc.p(-20, 0)));
+                        }
+                        for (var j = 0; j < that.getParent().BgLayer.BgSprite.length; j++) {
+                            that.getParent().BgLayer.BgSprite[j].runAction(cc.moveBy(0.8, cc.p(-20, 0)));
+                        }
+                        for(var k=0;k<that.getParent().SceneLayer.rocketTrap.length;k++)
+                        {
+                            that.getParent().SceneLayer.rocketTrap[k].rangeX-=20;
+                        }
+                    }
+
                 }
+                if(code==cc.KEY.left)
+                {
+                    if(-that.getParent().BgLayer.bg.x<=0)
+                    {
+                        that.getParent().SceneLayer.SceneSprite = that.getParent().SceneLayer.getChildren();
+                        that.getParent().BgLayer.BgSprite = that.getParent().BgLayer.getChildren();
+                        for (var i = 0; i < that.getParent().SceneLayer.SceneSprite.length; i++) {
+                            that.getParent().SceneLayer.SceneSprite[i].stopAllActions();
+                        }
+                        for (var j = 0; j < that.getParent().BgLayer.BgSprite.length; j++) {
+                            that.getParent().BgLayer.BgSprite[j].stopAllActions();
+                        }
+                    }
+                    else
+                    {
+                        that.people.runAction(that.people.run_animate_left);
+                        that.getParent().SceneLayer.SceneSprite = that.getParent().SceneLayer.getChildren();
+                        that.getParent().BgLayer.BgSprite = that.getParent().BgLayer.getChildren();
+                        for (var i = 0; i < that.getParent().SceneLayer.SceneSprite.length; i++) {
+                            that.getParent().SceneLayer.SceneSprite[i].runAction(cc.moveBy(0.8, cc.p(20, 0)));
+                        }
+                        for (var j = 0; j < that.getParent().BgLayer.BgSprite.length; j++) {
+                            that.getParent().BgLayer.BgSprite[j].runAction(cc.moveBy(0.8, cc.p(20, 0)));
+                        }
+                        for(var k=0;k<that.getParent().SceneLayer.rocketTrap.length;k++)
+                        {
+                            that.getParent().SceneLayer.rocketTrap[k].rangeX+=20;
+                        }
+                    }
+                }
+                if(code==cc.KEY.up)
+                {
+                    that.speed = 40;
+                }
+            },
+            onKeyReleased: function (touch, event) {
             }
         });
-        cc.eventManager.addListener(listener,this);
 
-        //背景
-        var bg = new cc.Sprite(res.bg_png);
-        bg.x=size.width/2;
-        bg.y=size.height/2;
-        //bg.setAnchorPoint(0,0);
-        this.addChild(bg,1);
+        // 注册监听器
+        cc.eventManager.addListener(listener, this.people);
+        this.listener=listener;
 
-        var hills = new cc.Sprite(res.hills_png);
-        hills.x=cc.winSize.width/2;
-        hills.y=cc.winSize.height/2;
-        this.addChild(hills,2);
-        this.hills[0]=hills;
-
-        var hills2 = new cc.Sprite(res.hills_png);
-        hills.x=cc.winSize.width/2;
-        hills.y=cc.winSize.height/2+hills.getBoundingBox().width;
-        this.addChild(hills2,2);
-        this.hills[1]=hills2;
-
-        var s_tiles = new cc.Sprite(res.s_tiles_png);
-        s_tiles.x=cc.winSize.width/2;
-        s_tiles.y=cc.winSize.height/2;
-        this.addChild(s_tiles,3);
-        this.s_tiles[0]=s_tiles;
-
-        var s_tiles2 = new cc.Sprite(res.s_tiles_png);
-        s_tiles2.x=cc.winSize.width/2+s_tiles.getBoundingBox().width;
-        s_tiles2.y=cc.winSize.height/2;
-        this.addChild(s_tiles2,3);
-        this.s_tiles[1]=s_tiles2;
-
-        this.schedule(this.hillsCallBack,0.01);
-        this.schedule(this.stCallBack,0.01);
-
-        //材质
-        //var tiles = new Tiles();
-        //this.addChild(tiles);
-
-        // var a = new cc.Sprite(res.Player_png);
-        // a.x = size.width*0.5;
-        // a.y = size.height*0.5;
-        // a.runAction(cc.flipX(true));
-        // this.addChild(a);
-        //var run_Animation=new cc.Animation();
-        // for(var i=1;i<=4;i++)
-        // {
-        //     var frameName = res["Run"+i+"_png"];
-        //     run_Animation.addSpriteFrameWithFile(frameName);
-        // }
-        // run_Animation.setDelayPerUnit(1/10);
-        // run_Animation.setRestoreOriginalFrame(true);//回到初始帧
-        // this.runAnimate = cc.animate(run_Animation);
-        // a.runAction(this.runAnimate.repeatForever());
-        //var player = new Player();
-        //player.x = size.width*0.3;
-       // player.y = size.height*0.3;
-        //this.addChild(player);
-
-
-
-        //返回主页面 重试按钮
-        /*var selectLeftItem = new cc.MenuItemImage(res.SelectReturn_png,res.SelectReturn_png,function () {
-            cc.director.runScene(new StartScene());
-        },this);
-        var selectAgainItem = new cc.MenuItemImage(res.Aagin_gif,res.Aagin_gif,function () {
-            cc.director.runScene(new MainScene());
-        },this);
-        var menu= new cc.Menu(selectLeftItem,selectAgainItem);
-        menu.x=size.width*0.5;
-        menu.y=size.height*0.2;
-        this.addChild(menu);
-        menu.alignItemsHorizontally();
-        menu.alignItemsHorizontallyWithPadding(size.width*0.5);*/
-        return true;
     },
-    hillsCallBack:function (dt) {
-        for(var i in this.hills){
-            if(this.hills[i].x<-640){
-                this.hills[i].x+=200;
+    myCallBack:function()
+    {
+        this.people.y+=this.speed;
+        this.speed-=5;
+        if(this.speed>0)
+        {
+            //none
+        }
+        else
+        {
+            var peoplePoint=this.people.getPosition();
+            for(var i=0;i<this.getParent().SceneLayer.block.length;i++)
+            {
+                var blockBox=this.getParent().SceneLayer.block[i].getBoundingBox();
+                if(cc.rectContainsPoint(blockBox,peoplePoint))
+                {
+                    this.flag=i;
+                }
             }
-            this.hills[i].x -= 2;
+            if(cc.rectContainsPoint(this.getParent().SceneLayer.block[this.flag].getBoundingBox(),peoplePoint))
+            {
+                this.people.setPositionY(this.getParent().SceneLayer.block[this.flag].y);
+                this.speed=0;
+            }
         }
     },
-    stCallBack:function (dt) {
-        for(var i in this.s_tiles){
-            if(this.s_tiles[i].x<-640){
-                this.s_tiles[i].x+=200;
+    TrapCollisionDetection:function()
+    {
+        //陷阱类和导弹陷阱类都在这检测
+        var peopleBox=this.people.getBoundingBox();
+        var failPoint=0;
+        for(var i=0;i<this.getParent().SceneLayer.trapTrap.length;i++)
+        {
+            var trapBox = this.getParent().SceneLayer.trapTrap[i].getBoundingBox();
+            if (cc.rectIntersectsRect(peopleBox, trapBox)) {
+                if(diamondNum<=0)
+                {
+                    failPoint++;
+                }
+                ls.setItem("failStar",failPoint);
+                cc.director.runScene(new FailedScene());
             }
-            this.s_tiles[i].x -= 3;
         }
+
+    },
+    // fireRocket:function()
+    // {
+    //     if(this.getParent().SceneLayer.rocketTrap[0].activate==true)
+    //     {
+    //         this.getParent().SceneLayer.rocketTrap[0].rocket();
+    //     }
+    //     else if(this.getParent().SceneLayer.rocketTrap[0].x-this.people.x<=100)
+    //     {
+    //         this.getParent().SceneLayer.rocketTrap[0].rocket();
+    //         this.getParent().SceneLayer.rocketTrap[0].activate=true;
+    //     }
+    // },
+    DiamondCollisionDetection:function()
+    {
+        //钻石
+        var peopleBox=this.people.getBoundingBox();
+        for(var i=0;i<this.getParent().SceneLayer.diamond.length;i++)
+        {
+            var diamondBox = this.getParent().SceneLayer.diamond[i].getBoundingBox();
+            if (cc.rectIntersectsRect(peopleBox, diamondBox)) {
+                diamondNum--;
+                this.getParent().SceneLayer.diamond[i].setVisible(false);
+                cc.log(diamondNum);
+            }
+        }
+
+    },
+    passLevel:function()
+    {
+        //过关点检测
+        var peopleBox=this.people.getBoundingBox();
+        var passLevelBox = this.getParent().SceneLayer.passLevel.getBoundingBox();
+        var point=1;
+        if (cc.rectIntersectsRect(peopleBox, passLevelBox))
+        {
+            //评分
+            if(passLevelTime<=180)
+            {
+                point++;
+            }
+            if(diamondNum<=0)
+            {
+                point++;
+            }
+            //本地存储关卡数
+            var passedLevels=parseInt(ls.getItem("PassedLevels"));
+            var currentLevel=parseInt(ls.getItem("CurrentLevel"));
+            if(passedLevels<currentLevel)
+            {
+                ls.setItem("PassedLevels",currentLevel);
+            }
+            //本地存储评分数
+            var currentStarNum=parseInt(ls.getItem("PerLevelsStarNum")[currentLevel-1]);
+            if(currentStarNum="null")
+            {
+                if(currentLevel==1)
+                {
+                    ls.setItem("PerLevelsStarNum",point.toString());
+                    cc.log(ls.getItem("PerLevelsStarNum"));
+                }
+                else
+                {
+                    ls.setItem("PerLevelsStarNum", ls.getItem("PerLevelsStarNum") + point.toString());
+                    cc.log(ls.getItem("PerLevelsStarNum"));
+                }
+            }
+            //成功界面星星数
+            ls.setItem("star",point);
+            cc.director.runScene(new SuccessScene());
+        }
+
+    },
+    passLevelTime:function()
+    {
+        //本关所用时间
+        passLevelTime++;
     }
 });
+
 
 var MainScene = cc.Scene.extend({
+    BgLayer:null,
+    SceneLayer:null,
+    PlayerLayer:null,
     onEnter:function () {
         this._super();
-        var layer = new MainLayer();
-        this.addChild(layer);
+        this.BgLayer=new BgLayer();
+        this.addChild(this.BgLayer,0);
+        this.SceneLayer=new SceneLayer();
+        this.addChild(this.SceneLayer,1);
+        this.PlayerLayer=new PlayerLayer();
+        this.addChild(this.PlayerLayer,2);
     }
 });
-/**
- * Created by Administrator on 11/22 0022.
- */
