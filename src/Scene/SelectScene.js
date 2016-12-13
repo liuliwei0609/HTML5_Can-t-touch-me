@@ -24,10 +24,10 @@ var SelectLayer = cc.Layer.extend({
 
         var ls=cc.sys.localStorage;
         // //设定目前的通关数（删除）
-        // ls.setItem("PassedLevels",1);
+        ls.setItem("PassedLevels",1);
         // //设定每关的评分数（删除）
-        // ls.setItem("PerLevelsStarNum",null);
-
+        ls.setItem("PerLevelsStarNum",null);
+        cc.log(ls.getItem("PerLevelsStarNum"));
         //计算总评分数
         var StarCount=0;
         for(var i=0;i<ls.getItem("PassedLevels");i++)
@@ -36,6 +36,7 @@ var SelectLayer = cc.Layer.extend({
 
         }
         // cc.log(StarCount);
+
 
         //建立总分数label
         var ConutLabel=new cc.LabelTTF(StarCount+"/18");
@@ -51,71 +52,6 @@ var SelectLayer = cc.Layer.extend({
         this.addChild(Star);
 
         //建立已通关关卡
-        //根据关卡数 建立通关的关卡 第一关默认为通关
-
-
-        if("null"==ls.getItem("PassedLevels"))
-        {
-
-            var i=0;
-            this.Block[i]=new cc.Sprite(res.Block_png);
-            this.Block[i].x=size.width*0.247*(i+1);
-            this.Block[i].y=size.height*0.7;
-            this.addChild(this.Block[i]);
-            var j=i+1;
-
-            this.NumItem[i]=new cc.MenuItemImage("res/SelectScene/Num_"+j+".png","res/SelectScene/Num_"+j+".png",function(){
-                cc.director.runScene(new MainScene());
-            },this);
-            this.NumMenu[i]=new cc.Menu(this.NumItem[i]);
-            this.NumMenu[i].x=size.width*0.247*(i+1);
-            this.NumMenu[i].y=size.height*0.7;
-
-            this.addChild(this.NumMenu[i]);
-
-
-
-            for(var i=1;i<6;i++)
-            {
-                //建立边框
-                this.Block[i]=new cc.Sprite(res.Block_png);
-                if(i<3)
-                {
-                    this.Block[i].x=size.width*0.247*(i+1);
-                    this.Block[i].y=size.height*0.7;
-                }
-                else
-                {
-                    this.Block[i].x=size.width*0.247*(i-2);
-                    this.Block[i].y=size.height*0.32;
-                }
-                this.addChild(this.Block[i]);
-                //建立锁子图片
-                var j=i+1;
-                this.Lock_img[i]=new cc.Sprite(res.Lock_png);
-                // this.Lock_img[i].setScale(0.6);
-                if(i<3)
-                {
-                    this.Lock_img[i].x=size.width*0.247*(i+1);
-                    this.Lock_img[i].y=size.height*0.7;
-                }
-                else
-                {
-                    this.Lock_img[i].x=size.width*0.247*(i-2);
-                    this.Lock_img[i].y=size.height*0.32;
-                }
-                this.addChild(this.Lock_img[i]);
-
-
-            }
-
-        }
-
-
-
-
-
-
         for(var i=0;i<ls.getItem("PassedLevels");i++)
         {
             //建立边框
@@ -135,7 +71,9 @@ var SelectLayer = cc.Layer.extend({
             var j=i+1;
 
             this.NumItem[i]=new cc.MenuItemImage("res/SelectScene/Num_"+j+".png","res/SelectScene/Num_"+j+".png",function(){
-                cc.director.runScene(new MainScene());
+
+                //??????????????????????????????????????????????????
+
             },this);
             this.NumMenu[i]=new cc.Menu(this.NumItem[i]);
             if(i<3)
@@ -178,7 +116,6 @@ var SelectLayer = cc.Layer.extend({
                 tempGrade++;
                 this.addChild(this.failedStar_img[x]);
             }
-            cc.log(i);
 
 
         }
@@ -186,39 +123,37 @@ var SelectLayer = cc.Layer.extend({
 
 
         //建立未通关关卡  总关卡暂且为6，可以根据需要调整
-        for(var i=ls.getItem("PassedLevels");i<6;i++)
+        for(var u=ls.getItem("PassedLevels");u<6;u++)
         {
             //建立边框
-            i=parseInt(i);
-            this.Block[i]=new cc.Sprite(res.Block_png);
-            if(i<3)
+            u=parseInt(u);
+            this.Block[u]=new cc.Sprite(res.Block_png);
+            if(u<3)
             {
-                this.Block[i].x=size.width*0.247*(i+1);
-                this.Block[i].y=size.height*0.7;
-                cc.log(i);
+                this.Block[u].x=size.width*0.247*(u+1);
+                this.Block[u].y=size.height*0.7;
             }
             else
             {
-                this.Block[i].x=size.width*0.247*(i-2);
-                this.Block[i].y=size.height*0.32;
-                cc.log(i);
+                this.Block[u].x=size.width*0.247*(u-2);
+                this.Block[u].y=size.height*0.32;
             }
-            this.addChild(this.Block[i]);
+            this.addChild(this.Block[u]);
             // 建立锁子图片
-            var j=i+1;
-            this.Lock_img[i]=new cc.Sprite(res.Lock_png);
+            var j=u+1;
+            this.Lock_img[u]=new cc.Sprite(res.Lock_png);
             // this.Lock_img[i].setScale(0.6);
-            if(i<3)
+            if(u<3)
             {
-                this.Lock_img[i].x=size.width*0.247*(i+1);
-                this.Lock_img[i].y=size.height*0.7;
+                this.Lock_img[u].x=size.width*0.247*(u+1);
+                this.Lock_img[u].y=size.height*0.7;
             }
             else
             {
-                this.Lock_img[i].x=size.width*0.247*(i-2);
-                this.Lock_img[i].y=size.height*0.32;
+                this.Lock_img[u].x=size.width*0.247*(u-2);
+                this.Lock_img[u].y=size.height*0.32;
             }
-            this.addChild(this.Lock_img[i]);
+            this.addChild(this.Lock_img[u]);
 
         }
 
@@ -240,7 +175,6 @@ var SelectLayer = cc.Layer.extend({
             {
                 audioEngine.playEffect(res.Button1_wav);
             }
-            cc.director.runScene(new MainScene());
         },this);
         nextItem.setScale(0.6);
         var nextMenu=new cc.Menu(nextItem);

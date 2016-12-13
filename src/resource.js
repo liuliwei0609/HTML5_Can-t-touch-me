@@ -49,10 +49,15 @@ var res = {
     //载入界面
     bg_jpg:"res/Loading/background.jpg",
     //材质
-    floor_block_png:"res/Block/floor_block.png",
-    block_png:"res/Block/block.png",
     diamond_png:"res/Block/diamond.png",
     passLevel_png:"res/Block/passLevel.png",
+    yellow_floor_png:"res/Block/yellow_floor.png",
+    green_floor_png:"res/Block/green_floor.png",
+    red_floor_png:"res/Block/red_floor.png",
+    nail_png:"res/Block/nail.png",
+    nails_png:"res/Block/nails.png",
+    nails_re_png:"res/Block/nails_reverse.png",
+
     //敌人1
     EnemyRun1_png:"res/EnemyRun/run1.png",
     EnemyRun2_png:"res/EnemyRun/run2.png",
@@ -65,6 +70,9 @@ var res = {
     Run4_png:"res/Run/run4.png",
     Run5_png:"res/Run/run5.png",
     Run6_png:"res/Run/run6.png",
+    //游戏主界面
+    mainBg1_png:"res/MainScene/mainBg1.png",
+    mainBg2_png:"res/MainScene/mainBg2.png"
 };
 
 var g_resources = [];

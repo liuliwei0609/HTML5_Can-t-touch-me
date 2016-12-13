@@ -69,6 +69,7 @@ var SuccessLayer = cc.Layer.extend({
             {
                 audioEngine.playEffect(res.Button1_wav);
             }
+            //判断当前关卡是多少，switch
             cc.director.runScene(new FailedScene());
         },this)
         var menu= new cc.Menu(selectLeftItem,selectAgainItem,selectNextItem);
