@@ -2,11 +2,14 @@ var EnemyClassTwo = cc.Sprite.extend({
     EnemyTwo:null,
     rangeX:0,
     boolNum:0,
-    ctor:function(fileName){
-        this._super(fileName);
+    xp:0,
+    yp:0,
+    ctor:function(fileName,xp,yp){
+        this._super(fileName,xp,yp);
         var size = cc.winSize;
-
         this.moveTwo();
+        this.xp=xp;
+        this.yp=yp;
         this.schedule(this.scheduleCallTwo,0.1);
         return true;
     },
@@ -28,7 +31,7 @@ var EnemyClassTwo = cc.Sprite.extend({
         if(0==this.boolNum)
         {
             this.x-=6;
-            if(this.x<=200+this.rangeX)
+            if(this.x<=cc.winSize.width*this.xp+this.rangeX)
             {
                 this.boolNum=1;
                 this.runAction(cc.flipX(true));
@@ -37,7 +40,7 @@ var EnemyClassTwo = cc.Sprite.extend({
         else if(1==this.boolNum)
         {
             this.x+=6;
-            if(this.x>=500+this.rangeX)
+            if(this.x>=cc.winSize.width*this.yp+this.rangeX)
             {
                 this.boolNum=0;
                 this.runAction(cc.flipX(false));
