@@ -1,3 +1,4 @@
+var audioEngine=cc.audioEngine; //音乐基类
 var diamondNum=1;//钻石数量(自己修改)
 var passLevelTime=0;//通关时间（秒）
 var ls=cc.sys.localStorage;
@@ -35,63 +36,51 @@ var SceneLayer_one=cc.Layer.extend({
         var size=cc.winSize;
         ls.setItem("CurrentLevel",1);//每关必须修改
         //创建地面材质
-        this.block[0]=new BlockClass(res.green_floor_png);
-        this.block[0].setScaleX(0.5);
+        this.block[0]=new BlockClass(res.green_floor_0_5_png);
         this.block[0].x=size.width*0.6;
         this.block[0].y=size.height*0.2;
 
-        this.block[1]=new BlockClass(res.green_floor_png);
-        this.block[1].setScaleX(0.3);
+        this.block[1]=new BlockClass(res.green_floor_0_3_png);
         this.block[1].x=size.width*1.1;
         this.block[1].y=size.height*0.4;
 
-        this.block[2]=new BlockClass(res.green_floor_png);
-        this.block[2].setScaleX(0.3);
+        this.block[2]=new BlockClass(res.green_floor_0_3_png);
         this.block[2].x=size.width*1.5;
         this.block[2].y=size.height*0.6;
 
-        this.block[3]=new BlockClass(res.green_floor_png);
-        this.block[3].setScaleX(0.3);
+        this.block[3]=new BlockClass(res.green_floor_0_3_png);
         this.block[3].x=size.width*2;
         this.block[3].y=size.height*0.5;
 
-        this.block[4]=new BlockClass(res.green_floor_png);
-        this.block[4].setScaleX(0.1);
+        this.block[4]=new BlockClass(res.green_floor_0_1_png);
         this.block[4].x=size.width*2.4;
         this.block[4].y=size.height*0.5;
 
-        this.block[5]=new BlockClass(res.green_floor_png);
-        this.block[5].setScaleX(0.1);
+        this.block[5]=new BlockClass(res.green_floor_0_1_png);
         this.block[5].x=size.width*2.6;
         this.block[5].y=size.height*0.5;
 
-        this.block[6]=new BlockClass(res.red_floor_png);
-        this.block[6].setScaleX(0.3);
+        this.block[6]=new BlockClass(res.red_floor_0_3_png);
         this.block[6].x=size.width*2.8;
         this.block[6].y=size.height*0.3;
 
-        this.block[7]=new BlockClass(res.green_floor_png);
-        this.block[7].setScaleX(0.3);
+        this.block[7]=new BlockClass(res.green_floor_0_3_png);
         this.block[7].x=size.width*2.8;
         this.block[7].y=size.height*0.95;
 
-        this.block[8]=new BlockClass(res.green_floor_png);
-        this.block[8].setScaleX(0.2);
+        this.block[8]=new BlockClass(res.green_floor_0_2_png);
         this.block[8].x=size.width*3.4;
         this.block[8].y=size.height*0.5;
 
-        this.block[9]=new BlockClass(res.green_floor_png);
-        this.block[9].setScaleX(0.2);
+        this.block[9]=new BlockClass(res.green_floor_0_2_png);
         this.block[9].x=size.width*3.7;
         this.block[9].y=size.height*0.7;
 
-        this.block[10]=new BlockClass(res.red_floor_png);
-        this.block[10].setScaleX(0.1);
+        this.block[10]=new BlockClass(res.red_floor_0_1_png);
         this.block[10].x=size.width*4.1;
         this.block[10].y=size.height*0.3;
 
-        this.block[11]=new BlockClass(res.green_floor_png);
-        this.block[11].setScaleX(0.2);
+        this.block[11]=new BlockClass(res.green_floor_0_2_png);
         this.block[11].x=size.width*4.5;
         this.block[11].y=size.height*0.7;
 
@@ -131,15 +120,6 @@ var SceneLayer_one=cc.Layer.extend({
         this.diamond[2]=new cc.Sprite(res.diamond_png);
         this.diamond[2].x=size.width*3.2;
         this.diamond[2].y=size.height*0.8;
-        //创建第一种敌人
-        // this.enemyOne[0]=new EnemyClassOne(res.EnemyRun1_png,2.2,2.6);
-        // this.enemyOne[0].setAnchorPoint(0.5,0);
-        // this.enemyOne[0].x=size.width*2.4;
-        // this.enemyOne[0].y=size.height*0.3;
-        //创建第二种敌人
-        // this.enemyTwo[0]=new EnemyClassTwo(res.Run1_png);
-        // this.enemyTwo[0].x=size.width*0.7;
-        // this.enemyTwo[0].y=size.height*0.7;
         //通关材质
         this.passLevel=new cc.Sprite(res.passLevel_png);
         this.passLevel.x=size.width*4.5;
@@ -154,12 +134,6 @@ var SceneLayer_one=cc.Layer.extend({
         {
             this.addChild(this.trapTrap[i]);
         }
-        // this.addChild(this.rocketTrap[0]);
-        // for(var i=0;i<this.enemyOne.length;i++)
-        // {
-        //     this.addChild(this.enemyOne[i]);
-        // }
-        // this.addChild(this.enemyTwo[0]);
         for(var i=0;i<this.diamond.length;i++)
         {
             this.addChild(this.diamond[i]);
@@ -178,7 +152,7 @@ var PlayerLayer_one=cc.Layer.extend({
     {
         this._super();
         var size=cc.winSize;
-        this.people=new PeopleClass(res.Stand_right_png);
+        this.people=new PeopleClass(res.Right_Run_1);
         this.people.x=size.width*0.5;
         this.people.y=size.height*0.4;
         this.people.setAnchorPoint(0.5,0);
@@ -197,7 +171,6 @@ var PlayerLayer_one=cc.Layer.extend({
         //通关点检测碰撞
         this.schedule(this.passLevel,0.5,cc.REPEAT_FOREVER,0);
         var that=this;
-
         //监听器
         var listener = cc.EventListener.create({
             event: cc.EventListener.KEYBOARD,
@@ -281,26 +254,58 @@ var PlayerLayer_one=cc.Layer.extend({
                 }
                 if(code==cc.KEY.up)
                 {
+                    if(0==cc.sys.localStorage.getItem("soundisOn"))
+                    {
+                        audioEngine.playEffect(res.Button1_wav);
+                    }
                     if(that.speed==0)
                     {
                         that.speed=50;
                     }
                     // that.speed=50;
                 }
+                if(code==cc.KEY.escape)
+                {
+                    that.getParent().addChild(that.getParent().EscLayer,3);
+                    cc.director.pause();
+                }
             },
             onKeyReleased: function (touch, event) {
             }
         });
-
         // 注册监听器
         cc.eventManager.addListener(listener, this.people);
         this.listener=listener;
-
+        //增加设置按钮
+        var settingItem=new cc.MenuItemImage(res.Setting_png,res.Setting2_png,function(){
+            this.getParent().addChild(this.getParent().PopLayer,3);
+            if(0==cc.sys.localStorage.getItem("soundisOn"))
+            {
+                audioEngine.playEffect(res.Button1_wav);
+            }
+            cc.director.pause();
+        },this);
+        var settingMenu=new cc.Menu(settingItem);
+        settingMenu.x=size.width*0.9;
+        settingMenu.y=size.height*0.9;
+        this.addChild(settingMenu);
+        return true;
     },
     myCallBack:function()
     {
         this.people.y+=this.speed;
         this.speed-=5;
+        var failPoint=0;
+        if(this.people.y<-this.people.getBoundingBox().height)
+        {
+            //掉落死亡
+            if(diamondNum<=0)
+            {
+                failPoint++;
+            }
+            ls.setItem("failStar",failPoint);
+            cc.director.runScene(new FailedScene());
+        }
         if(this.speed>0)
         {
             //none
@@ -510,6 +515,8 @@ var MainSceneOne = cc.Scene.extend({
     BgLayer_one:null,
     SceneLayer_one:null,
     PlayerLayer_one:null,
+    PopLayer:null,
+    EscLayer:null,
     onEnter:function () {
         this._super();
         this.BgLayer_one=new BgLayer_one();
@@ -518,5 +525,8 @@ var MainSceneOne = cc.Scene.extend({
         this.addChild(this.SceneLayer_one,1);
         this.PlayerLayer_one=new PlayerLayer_one();
         this.addChild(this.PlayerLayer_one,2);
+
+        this.PopLayer=new PopLayer();
+        this.EscLayer=new EscLayer();
     }
 });
